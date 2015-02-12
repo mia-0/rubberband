@@ -1,10 +1,9 @@
 prefix=%PREFIX%
-exec_prefix=${prefix}
-libdir=${exec_prefix}/lib
-includedir=${prefix}/include
+libdir=%LIBDIR%
+includedir=%INCLUDEDIR%
 
 Name: rubberband
 Version: 1.8.1
-Description: 
+Description: library for audio time-stretching and pitch-shifting
 Libs: -L${libdir} -lrubberband
-Cflags: -I${includedir} 
+Cflags: -I${includedir}
