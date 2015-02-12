@@ -19,15 +19,13 @@ LIBNAME			:= librubberband
 DYNAMIC_EXTENSION	:= .so
 DYNAMIC_FULL_VERSION	:= 2.1.0
 DYNAMIC_ABI_VERSION	:= 2
-DYNAMIC_LDFLAGS		:= -shared -Wl,-Bsymbolic -Wl,-soname=$(LIBNAME)$(DYNAMIC_EXTENSION).$(DYNAMIC_ABI_VERSION)
+DYNAMIC_NAME		:= $(LIBNAME)$(DYNAMIC_EXTENSION)
+DYNAMIC_FULL_NAME	:= $(DYNAMIC_NAME).$(DYNAMIC_FULL_VERSION)
+DYNAMIC_LDFLAGS		:= -shared -Wl,-Bsymbolic -Wl,-soname=$(DYNAMIC_NAME).$(DYNAMIC_ABI_VERSION)
 
-STATIC_TARGET  		:= lib/$(LIBNAME).a
-DYNAMIC_TARGET 		:= lib/$(LIBNAME)$(DYNAMIC_EXTENSION)
-
-all:		lib $(STATIC_TARGET) $(DYNAMIC_TARGET)
-
-static:		lib $(STATIC_TARGET)
-dynamic:	lib $(DYNAMIC_TARGET)
+STATIC_NAME		:= $(LIBNAME).a
+STATIC_TARGET		:= lib/$(STATIC_NAME)
+DYNAMIC_TARGET		:= lib/$(DYNAMIC_NAME)
 
 PUBLIC_INCLUDES := \
 	rubberband/rubberband-c.h \
@@ -58,23 +56,44 @@ LIBRARY_SOURCES := \
 LIBRARY_OBJECTS := $(LIBRARY_SOURCES:.cpp=.o)
 LIBRARY_OBJECTS := $(LIBRARY_OBJECTS:.c=.o)
 
-$(STATIC_TARGET):	$(LIBRARY_OBJECTS)
+all: static dynamic
+
+$(STATIC_TARGET): $(LIBRARY_OBJECTS)
 	$(AR) rsc $@ $^
 
-$(DYNAMIC_TARGET):	$(LIBRARY_OBJECTS)
+$(DYNAMIC_TARGET): $(LIBRARY_OBJECTS)
 	$(CXX) $(DYNAMIC_LDFLAGS) $^ -o $@ $(LDFLAGS)
 
 lib:
 	$(MKDIR) $@
 
-install:	all
+static: lib $(STATIC_TARGET)
+dynamic:lib $(DYNAMIC_TARGET)
+
+install-headers:
 	sed "s,%PREFIX%,$(PREFIX),;s,%LIBDIR%,$(INSTALL_LIBDIR),;s,%INCLUDEDIR%,$(INSTALL_INCDIR)," rubberband.pc.in > rubberband.pc
-	install -D -m644 rubberband.pc $(INSTALL_PKGDIR)/rubberband.pc
-	install -D -m644 $(PUBLIC_INCLUDES) $(INSTALL_INCDIR)
-	install -D -m644 $(STATIC_TARGET) $(INSTALL_LIBDIR)
-	install -D -m755 $(DYNAMIC_TARGET) $(INSTALL_LIBDIR)/$(LIBNAME)$(DYNAMIC_EXTENSION).$(DYNAMIC_FULL_VERSION)
-	ln -sf $(LIBNAME)$(DYNAMIC_EXTENSION).$(DYNAMIC_FULL_VERSION) $(INSTALL_LIBDIR)/$(LIBNAME)$(DYNAMIC_EXTENSION).$(DYNAMIC_ABI_VERSION)
-	ln -sf $(LIBNAME)$(DYNAMIC_EXTENSION).$(DYNAMIC_FULL_VERSION) $(INSTALL_LIBDIR)/$(LIBNAME)$(DYNAMIC_EXTENSION)
+	install -d $(INSTALL_PKGDIR)
+	install -d $(INSTALL_INCDIR)
+	install -m 644 rubberband.pc $(INSTALL_PKGDIR)/rubberband.pc
+	install -m 644 $(PUBLIC_INCLUDES) $(INSTALL_INCDIR)
+
+install-static: static install-headers
+	install -d $(INSTALL_LIBDIR)
+	install -m644 $(STATIC_TARGET) $(INSTALL_LIBDIR)
+
+install-dynamic: dynamic install-headers
+	install -d $(INSTALL_LIBDIR)
+	install -m 755 $(DYNAMIC_TARGET) $(INSTALL_LIBDIR)/$(DYNAMIC_FULL_NAME)
+	ln -sf $(DYNAMIC_FULL_NAME) $(INSTALL_LIBDIR)/$(DYNAMIC_NAME).$(DYNAMIC_ABI_VERSION)
+	ln -sf $(DYNAMIC_FULL_NAME) $(INSTALL_LIBDIR)/$(DYNAMIC_NAME)
+
+install: all install-static install-dynamic
+
+uninstall:
+	rm -f -- $(INSTALL_PKGDIR)/rubberband.pc
+	rm -f -- $(INSTALL_LIBDIR)/$(STATIC_NAME)
+	rm -f -- $(INSTALL_LIBDIR)/$(DYNAMIC_FULL_NAME) $(INSTALL_LIBDIR)/$(DYNAMIC_NAME).$(DYNAMIC_ABI_VERSION) $(DYNAMIC_FULL_NAME) $(INSTALL_LIBDIR)/$(DYNAMIC_NAME)
+	rm -rf -- $(INSTALL_INCDIR)
 
 clean:
 	rm -f -- $(LIBRARY_OBJECTS)
@@ -82,3 +101,5 @@ clean:
 distclean:	clean
 	rm -f -- $(STATIC_TARGET) $(DYNAMIC_TARGET)
 	rm -rf lib
+
+.PHONY: clean install-headers
