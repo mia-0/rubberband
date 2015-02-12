@@ -2,9 +2,9 @@ PREFIX			:= /usr/local
 LIBDIR			:= $(PREFIX)/lib
 INCLUDEDIR		:= $(PREFIX)/include
 
-OPTFLAGS		:= -fPIC -g -O2 -Wall
+OPTFLAGS		:= -fPIC -g -O3 -Wall
 override CFLAGS		+= $(OPTFLAGS)
-override CXXFLAGS	+= $(OPTFLAGS) -DUSE_PTHREADS -DNDEBUG -I. -Isrc -Irubberband
+override CXXFLAGS	+= $(OPTFLAGS) -DUSE_PTHREADS -DNDEBUG -DPROCESS_SAMPLE_TYPE=float -I. -Isrc -Irubberband
 override LDFLAGS	+= -pthread
 
 MKDIR			:= mkdir
