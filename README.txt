@@ -88,10 +88,9 @@ the supplied build files will handle these for you.)
    -DUSE_PTHREADS
    Use the pthreads library (required unless on Windows)
 
-   -DPROCESS_SAMPLE_TYPE=float
-   Select single precision for internal calculations. The default is
-   double precision. Consider using for mobile architectures with
-   slower double-precision support.
+   -DPROCESS_SAMPLE_TYPE=double
+   Select double precision for internal calculations. The default is
+   single precision.
 
 3. Copyright notes for bundled libraries
 ========================================
