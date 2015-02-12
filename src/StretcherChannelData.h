@@ -37,7 +37,7 @@ class Resampler;
 
 class RubberBandStretcher::Impl::ChannelData
 {
-public:        
+public:
     /**
      * Construct a ChannelData structure.
      *
@@ -97,7 +97,7 @@ public:
      * buffer allocated at all.
      */
     void setResampleBufSize(size_t resamplebufSize);
-    
+
     RingBuffer<float> *inbuf;
     RingBuffer<float> *outbuf;
 
@@ -141,7 +141,7 @@ private:
     void construct(const std::set<size_t> &sizes,
                    size_t initialWindowSize, size_t initialFftSize,
                    size_t outbufSize);
-};        
+};
 
 }
 

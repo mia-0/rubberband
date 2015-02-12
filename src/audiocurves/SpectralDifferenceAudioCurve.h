@@ -39,14 +39,14 @@ public:
 
     virtual void setFftSize(int newSize);
 
-    virtual float processFloat(const float *R__ mag, int increment);
-    virtual double processDouble(const double *R__ mag, int increment);
+    virtual float processFloat(const float *mag, int increment);
+    virtual double processDouble(const double *mag, int increment);
     virtual void reset();
     virtual const char *getUnit() const { return "V"; }
 
 protected:
-    double *R__ m_mag;
-    double *R__ m_tmpbuf;
+    double *m_mag;
+    double *m_tmpbuf;
 };
 
 }

@@ -36,8 +36,8 @@ public:
 
     virtual ~HighFrequencyAudioCurve();
 
-    virtual float processFloat(const float *R__ mag, int increment);
-    virtual double processDouble(const double *R__ mag, int increment);
+    virtual float processFloat(const float *mag, int increment);
+    virtual double processDouble(const double *mag, int increment);
     virtual void reset();
     virtual const char *getUnit() const { return "Vbin"; }
 };

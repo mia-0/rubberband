@@ -70,16 +70,16 @@ public:
     virtual ~Window() {
         deallocate(m_cache);
     }
-    
-    inline void cut(T *const R__ block) const {
+
+    inline void cut(T *const block) const {
         v_multiply(block, m_cache, m_size);
     }
 
-    inline void cut(const T *const R__ src, T *const R__ dst) const {
+    inline void cut(const T *const src, T *const dst) const {
         v_multiply(dst, src, m_cache, m_size);
     }
 
-    inline void add(T *const R__ dst, T scale) const {
+    inline void add(T *const dst, T scale) const {
         v_add_with_gain(dst, m_cache, scale, m_size);
     }
 
@@ -101,9 +101,9 @@ public:
 protected:
     WindowType m_type;
     int m_size;
-    T *R__ m_cache;
+    T *m_cache;
     T m_area;
-    
+
     void encache();
     void cosinewin(T *, T, T, T, T);
 };
@@ -118,38 +118,38 @@ void Window<T>::encache()
     int i;
 
     switch (m_type) {
-		
+
     case RectangularWindow:
 	for (i = 0; i < n; ++i) {
 	    m_cache[i] *= 0.5;
 	}
 	break;
-	    
+
     case BartlettWindow:
 	for (i = 0; i < n/2; ++i) {
 	    m_cache[i] *= (i / T(n/2));
 	    m_cache[i + n/2] *= (1.0 - (i / T(n/2)));
 	}
 	break;
-	    
+
     case HammingWindow:
         cosinewin(m_cache, 0.54, 0.46, 0.0, 0.0);
 	break;
-	    
+
     case HanningWindow:
         cosinewin(m_cache, 0.50, 0.50, 0.0, 0.0);
 	break;
-	    
+
     case BlackmanWindow:
         cosinewin(m_cache, 0.42, 0.50, 0.08, 0.0);
 	break;
-	    
+
     case GaussianWindow:
 	for (i = 0; i < n; ++i) {
             m_cache[i] *= pow(2, - pow((i - (n-1)/2.0) / ((n-1)/2.0 / 3), 2));
 	}
 	break;
-	    
+
     case ParzenWindow:
     {
         int N = n-1;
@@ -163,7 +163,7 @@ void Window<T>::encache()
             T m = 1.0 - 6 * pow(wn / (T(N)/2), 2) * (1.0 - abs(wn) / (T(N)/2));
             m_cache[i] *= m;
             m_cache[N-i] *= m;
-        }            
+        }
         break;
     }
 
@@ -175,7 +175,7 @@ void Window<T>::encache()
         cosinewin(m_cache, 0.35875, 0.48829, 0.14128, 0.01168);
         break;
     }
-	
+
     m_area = 0;
     for (i = 0; i < n; ++i) {
         m_area += m_cache[i];

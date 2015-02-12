@@ -74,10 +74,6 @@
 
 #include <string.h>
 
-#ifdef HAVE_IPP
-#include <ipps.h>
-#endif
-
 // Simple allocators with a fixed minimum, to avoid reallocation if
 // the size changes but remains smaller than that.  The system alloc
 // functions no doubt do exactly the same thing for some value
@@ -87,70 +83,25 @@
 
 static void *speex_alloc (int count, int size)
 {
-#ifdef HAVE_IPP
-    void *rv;
-#endif
-
-//	fprintf(stderr, "speex_alloc(%d,%d)\n", count, size);
-	if (count * size < ALLOC_MINIMUM) {
-//		fprintf(stderr, "upgrading count from %d to %d\n", count, ALLOC_MINIMUM / size);
+    if (count * size < ALLOC_MINIMUM) {
         count = ALLOC_MINIMUM / size;
     }
 
-#ifdef HAVE_IPP
-    if (size == sizeof(float) && size == 4) { // or sizeof(int32) or whatever, doesn't matter
-        rv = ippsMalloc_32f(count);
-    } else if (size == sizeof(double) && size == 8) {
-        rv = ippsMalloc_64f(count);
-    } else {
-        rv = ippsMalloc_8u(count * size);
-    }
-//	fprintf(stderr, "allocated at %p; now setting %d bytes to zero\n", rv, count*size);
-    memset(rv, count * size, 0);
-//	fprintf(stderr, "returning %p\n",rv);
-    return rv;
-#else
     return calloc(count, size);
-#endif
 }
 
-static void speex_free (void *ptr) 
+static void speex_free (void *ptr)
 {
-//	fprintf(stderr,"speex_free(%p)\n", ptr);
-#ifdef HAVE_IPP
-  	ippsFree(ptr);
-#else
     free(ptr);
-#endif
 }
 
 static void *speex_realloc (void *ptr, int oldcount, int newcount, int size)
 {
-#ifdef HAVE_IPP
-	void *newptr;
-#endif
-
-//	fprintf(stderr,"speex_realloc(%p,%d,%d,%d)\n", ptr, oldcount, newcount, size);
-
     if (newcount * size < ALLOC_MINIMUM) {
-//		fprintf(stderr,"returning %p\n",ptr);
         return ptr;
     }
-//    fprintf(stderr, "NOTE: speex_realloc: actual reallocation happening (newcount = %d, size = %d)\n", newcount, size);
 
-#ifdef HAVE_IPP
-    newptr = speex_alloc(newcount, size);
-    if (ptr && oldcount > 0) {
-        int copy = newcount;
-        if (oldcount < copy) copy = oldcount;
-        memcpy(newptr, ptr, copy * size);
-    }
-    speex_free(ptr);
-//	fprintf(stderr,"returning %p\n", ptr);
-    return newptr;
-#else
     return realloc(ptr, newcount * size);
-#endif
 }
 
 #include "speex_resampler.h"
@@ -316,7 +267,7 @@ static double compute_func(float x, struct FuncDef *func)
     interp[1] = 1.f - interp[3] - interp[2] - interp[0];
 
     /*sum = frac*accum[1] + (1-frac)*accum[2];*/
-    return 
+    return
 	interp[0]*func->table[ind] + interp[1]*func->table[ind+1] +
 	interp[2]*func->table[ind+2] + interp[3]*func->table[ind+3];
 }
@@ -561,7 +512,7 @@ static int resampler_basic_interpolate_single(SpeexResamplerState *st, unsigned 
 
 /* This is the same as the previous function, except with a
  * double-precision accumulator */
-static int resampler_basic_interpolate_double(SpeexResamplerState *st, unsigned int channel_index, const float *in, unsigned int *in_len, float *out, unsigned int *out_len) 
+static int resampler_basic_interpolate_double(SpeexResamplerState *st, unsigned int channel_index, const float *in, unsigned int *in_len, float *out, unsigned int *out_len)
 {
     int N = st->filt_len;
     int out_sample = 0;
@@ -728,7 +679,7 @@ static void update_filter(SpeexResamplerState *st)
             for (j = 0; j < st->filt_len; j++) {
                 st->sinc_table[i*st->filt_len+j] = sinc
                     (st->cutoff,
-                     ((j - (int)st->filt_len / 2 + 1) - ((float)i) / st->den_rate), 
+                     ((j - (int)st->filt_len / 2 + 1) - ((float)i) / st->den_rate),
                      st->filt_len,
                      quality_map[st->quality].window_func);
             }
@@ -818,7 +769,7 @@ static void update_filter(SpeexResamplerState *st)
         int old_alloc_size = st->mem_alloc_size;
 
         if (st->filt_len - 1 > st->mem_alloc_size) {
-			
+
 		//fprintf(stderr,"mem=%p\n",st->mem);
 
             st->mem = (float*)speex_realloc
@@ -1176,7 +1127,7 @@ int speex_resampler_set_quality(SpeexResamplerState *st, int quality)
     st->quality = quality;
 
     if (st->initialised) {
-        update_filter(st); 
+        update_filter(st);
     }
 
     return RESAMPLER_ERR_SUCCESS;
@@ -1212,7 +1163,7 @@ int speex_resampler_get_input_latency(SpeexResamplerState *st)
     return st->filt_len / 2;
 }
 
-int speex_resampler_get_output_latency(SpeexResamplerState *st) 
+int speex_resampler_get_output_latency(SpeexResamplerState *st)
 {
     return ((st->filt_len / 2) * st->den_rate + (st->num_rate >> 1)) / st->num_rate;
 }

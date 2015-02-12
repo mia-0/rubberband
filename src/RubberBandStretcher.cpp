@@ -80,19 +80,19 @@ RubberBandStretcher::getLatency() const
 }
 
 void
-RubberBandStretcher::setTransientsOption(Options options) 
+RubberBandStretcher::setTransientsOption(Options options)
 {
     m_d->setTransientsOption(options);
 }
 
 void
-RubberBandStretcher::setDetectorOption(Options options) 
+RubberBandStretcher::setDetectorOption(Options options)
 {
     m_d->setDetectorOption(options);
 }
 
 void
-RubberBandStretcher::setPhaseOption(Options options) 
+RubberBandStretcher::setPhaseOption(Options options)
 {
     m_d->setPhaseOption(options);
 }
@@ -110,7 +110,7 @@ RubberBandStretcher::setPitchOption(Options options)
 }
 
 void
-RubberBandStretcher::setExpectedInputDuration(size_t samples) 
+RubberBandStretcher::setExpectedInputDuration(size_t samples)
 {
     m_d->setExpectedInputDuration(samples);
 }
@@ -166,7 +166,7 @@ RubberBandStretcher::getFrequencyCutoff(int n) const
 }
 
 void
-RubberBandStretcher::setFrequencyCutoff(int n, float f) 
+RubberBandStretcher::setFrequencyCutoff(int n, float f)
 {
     m_d->setFrequencyCutoff(n, f);
 }

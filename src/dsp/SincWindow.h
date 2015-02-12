@@ -75,16 +75,16 @@ public:
         m_p = p;
         encache();
     }
-    
-    inline void cut(T *const R__ dst) const {
+
+    inline void cut(T *const dst) const {
         v_multiply(dst, m_cache, m_size);
     }
 
-    inline void cut(const T *const R__ src, T *const R__ dst) const {
+    inline void cut(const T *const src, T *const dst) const {
         v_multiply(dst, src, m_cache, m_size);
     }
 
-    inline void add(T *const R__ dst, T scale) const {
+    inline void add(T *const dst, T scale) const {
         v_add_with_gain(dst, m_cache, scale, m_size);
     }
 
@@ -100,7 +100,7 @@ public:
      * constructor).
      */
     static
-    void write(T *const R__ dst, const int n, const int p) {
+    void write(T *const dst, const int n, const int p) {
         const int half = n/2;
         writeHalf(dst, n, p);
         int target = half - 1;
@@ -115,7 +115,7 @@ public:
 protected:
     int m_size;
     int m_p;
-    T *R__ m_cache;
+    T *m_cache;
     T m_area;
 
     /**
@@ -125,7 +125,7 @@ protected:
      * half (indices 0 to n/2-1) of dst is left unchanged.
      */
     static
-    void writeHalf(T *const R__ dst, const int n, const int p) {
+    void writeHalf(T *const dst, const int n, const int p) {
         const int half = n/2;
         const T twopi = 2. * M_PI;
         dst[half] = T(1.0);
@@ -134,14 +134,14 @@ protected:
             dst[half+i] = sin(arg) / arg;
         }
     }
-    
+
     void encache() {
         if (!m_cache) {
             m_cache = allocate<T>(m_size);
         }
 
         write(m_cache, m_size, m_p);
-	
+
         m_area = 0;
         for (int i = 0; i < m_size; ++i) {
             m_area += m_cache[i];

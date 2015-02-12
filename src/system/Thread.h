@@ -26,8 +26,6 @@
 
 #include <string>
 
-#ifndef NO_THREADING
-
 #ifdef _WIN32
 #include <windows.h>
 #else /* !_WIN32 */
@@ -37,10 +35,6 @@
 #error No thread implementation selected
 #endif /* !USE_PTHREADS */
 #endif /* !_WIN32 */
-
-//#define DEBUG_THREAD 1
-//#define DEBUG_MUTEX 1
-//#define DEBUG_CONDITION 1
 
 namespace RubberBand
 {
@@ -96,16 +90,9 @@ public:
 private:
 #ifdef _WIN32
     HANDLE m_mutex;
-#ifndef NO_THREAD_CHECKS
-    DWORD m_lockedBy;
-#endif
 #else
 #ifdef USE_PTHREADS
     pthread_mutex_t m_mutex;
-#ifndef NO_THREAD_CHECKS
-    pthread_t m_lockedBy;
-    bool m_locked;
-#endif
 #endif
 #endif
 };
@@ -139,13 +126,13 @@ class Condition
 public:
     Condition(std::string name);
     ~Condition();
-    
+
     void lock();
     void unlock();
     void wait(int us = 0);
 
     void signal();
-    
+
 private:
 
 #ifdef _WIN32
@@ -159,74 +146,8 @@ private:
     bool m_locked;
 #endif
 #endif
-#ifdef DEBUG_CONDITION
-    std::string m_name;
-#endif
 };
 
 }
-
-#else
-
-/* Stub threading interface. We do not have threading support in this code. */
-
-namespace RubberBand
-{
-
-class Thread
-{
-public:
-    typedef unsigned int Id;
-
-    Thread() { }
-    virtual ~Thread() { }
-
-    Id id() { return 0; }
-
-    void start() { } 
-    void wait() { }
-
-    static bool threadingAvailable() { return false; }
-
-protected:
-    virtual void run() = 0;
-
-private:
-};
-
-class Mutex
-{
-public:
-    Mutex() { }
-    ~Mutex() { }
-
-    void lock() { }
-    void unlock() { }
-    bool trylock() { return false; }
-};
-
-class MutexLocker
-{
-public:
-    MutexLocker(Mutex *) { }
-    ~MutexLocker() { }
-};
-
-class Condition
-{
-public:
-    Condition(std::string name) { }
-    ~Condition() { }
-    
-    void lock() { }
-    void unlock() { }
-    void wait(int us = 0) { }
-
-    void signal() { }
-};
-
-}
-
-#endif /* NO_THREADING */
 
 #endif

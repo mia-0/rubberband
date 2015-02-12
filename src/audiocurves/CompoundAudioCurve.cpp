@@ -78,7 +78,7 @@ CompoundAudioCurve::setFftSize(int newSize)
 }
 
 float
-CompoundAudioCurve::processFloat(const float *R__ mag, int increment)
+CompoundAudioCurve::processFloat(const float *mag, int increment)
 {
     float percussive = 0.f;
     float hf = 0.f;
@@ -98,7 +98,7 @@ CompoundAudioCurve::processFloat(const float *R__ mag, int increment)
 }
 
 double
-CompoundAudioCurve::processDouble(const double *R__ mag, int increment)
+CompoundAudioCurve::processDouble(const double *mag, int increment)
 {
     double percussive = 0.0;
     double hf = 0.0;
@@ -125,7 +125,7 @@ CompoundAudioCurve::processFiltering(double percussive, double hf)
     }
 
     double rv = 0.f;
-    
+
     double hfDeriv = hf - m_lastHf;
 
     m_hfFilter->push(hf);
@@ -137,7 +137,7 @@ CompoundAudioCurve::processFiltering(double percussive, double hf)
     m_lastHf = hf;
 
     double result = 0.f;
-    
+
     double hfExcess = hf - hfFiltered;
 
     if (hfExcess > 0.0) {

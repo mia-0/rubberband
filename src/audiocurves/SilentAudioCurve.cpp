@@ -44,7 +44,7 @@ SilentAudioCurve::reset()
 }
 
 float
-SilentAudioCurve::processFloat(const float *R__ mag, int)
+SilentAudioCurve::processFloat(const float *mag, int)
 {
     const int hs = m_lastPerceivedBin;
     static float threshold = powf(10.f, -6);
@@ -52,12 +52,12 @@ SilentAudioCurve::processFloat(const float *R__ mag, int)
     for (int i = 0; i <= hs; ++i) {
         if (mag[i] > threshold) return 0.f;
     }
-        
+
     return 1.f;
 }
 
 double
-SilentAudioCurve::processDouble(const double *R__ mag, int)
+SilentAudioCurve::processDouble(const double *mag, int)
 {
     const int hs = m_lastPerceivedBin;
     static double threshold = pow(10.0, -6);
@@ -65,7 +65,7 @@ SilentAudioCurve::processDouble(const double *R__ mag, int)
     for (int i = 0; i <= hs; ++i) {
         if (mag[i] > threshold) return 0.f;
     }
-        
+
     return 1.f;
 }
 

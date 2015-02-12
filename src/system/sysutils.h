@@ -24,49 +24,13 @@
 #ifndef _RUBBERBAND_SYSUTILS_H_
 #define _RUBBERBAND_SYSUTILS_H_
 
-#ifdef __MSVC__
-#include "float_cast/float_cast.h"
-#define R__ __restrict
-#endif
-
-#ifdef __clang__
-#define R__ __restrict__
-#else
-#ifdef __GNUC__
-#define R__ __restrict__
-#endif
-#endif
-
-#ifndef R__
-#define R__
-#endif
-
 #ifdef __MINGW32__
 #include <malloc.h>
 #else
-#ifndef __MSVC__
 #include <alloca.h>
 #endif
-#endif
 
-#ifdef __MSVC__
-#include <malloc.h>
-#include <process.h>
-#define alloca _alloca
-#define getpid _getpid
-#endif
-
-#if defined(__MSVC__) && _MSC_VER < 1700
-#define uint8_t unsigned __int8
-#define uint16_t unsigned __int16
-#define uint32_t unsigned __int32
-#elif defined(__MSVC__)
-#define ssize_t long
 #include <stdint.h>
-#else
-#include <stdint.h>
-#endif
-
 #include <math.h>
 
 namespace RubberBand {
@@ -96,12 +60,6 @@ struct timespec { long tv_sec; long tv_nsec; };
 void clock_gettime(int clk_id, struct timespec *p);
 #define CLOCK_MONOTONIC 1
 #define CLOCK_REALTIME 2
-
-#endif
-
-#ifdef __MSVC__
-
-void usleep(unsigned long);
 
 #endif
 
@@ -149,7 +107,7 @@ extern void system_memorybarrier();
 #include <libkern/OSAtomic.h>
 #define MBARRIER() OSMemoryBarrier()
 #else
-#if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)
+#if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINO>= 1)
 #define MBARRIER() __sync_synchronize()
 #else
 namespace RubberBand {
@@ -164,11 +122,6 @@ extern void system_memorybarrier();
 #define DLCLOSE(a)   dlclose((a))
 #define DLERROR()    dlerror()
 
-#endif
-
-#ifdef NO_THREADING
-#undef MBARRIER
-#define MBARRIER() 
 #endif
 
 #endif

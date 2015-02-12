@@ -37,8 +37,6 @@
 #include "system/sysutils.h"
 #include "system/Allocators.h"
 
-//#define DEBUG_SCAVENGER 1
-
 namespace RubberBand {
 
 /**
@@ -175,10 +173,6 @@ Scavenger<T>::claim(T *t)
 	}
     }
 
-#ifdef DEBUG_SCAVENGER
-    std::cerr << "WARNING: Scavenger::claim(" << t << "): run out of slots (at "
-              << m_objects.size() << "), using non-RT-safe method" << std::endl;
-#endif
     pushExcess(t);
 }
 
@@ -186,12 +180,8 @@ template <typename T>
 void
 Scavenger<T>::scavenge(bool clearNow)
 {
-#ifdef DEBUG_SCAVENGER
-    std::cerr << "Scavenger::scavenge: claimed " << m_claimed << ", scavenged " << m_scavenged << ", cleared as excess " << m_asExcess << std::endl;
-#endif
-
     if (m_scavenged >= m_claimed) return;
-    
+
     struct timeval tv;
     (void)gettimeofday(&tv, 0);
     int sec = tv.tv_sec;
@@ -230,10 +220,6 @@ template <typename T>
 void
 Scavenger<T>::clearExcess(int sec)
 {
-#ifdef DEBUG_SCAVENGER
-    std::cerr << "Scavenger::clearExcess: Excess now " << m_excess.size() << std::endl;
-#endif
-
     m_excessMutex.lock();
     for (typename ObjectList::iterator i = m_excess.begin();
 	 i != m_excess.end(); ++i) {

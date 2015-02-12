@@ -63,7 +63,7 @@ void rubberband_set_pitch_scale(RubberBandState state, double scale)
     state->m_s->setPitchScale(scale);
 }
 
-double rubberband_get_time_ratio(const RubberBandState state) 
+double rubberband_get_time_ratio(const RubberBandState state)
 {
     return state->m_s->getTimeRatio();
 }
@@ -73,7 +73,7 @@ double rubberband_get_pitch_scale(const RubberBandState state)
     return state->m_s->getPitchScale();
 }
 
-unsigned int rubberband_get_latency(const RubberBandState state) 
+unsigned int rubberband_get_latency(const RubberBandState state)
 {
     return state->m_s->getLatency();
 }

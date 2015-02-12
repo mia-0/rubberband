@@ -27,9 +27,9 @@
 
 #include "system/Allocators.h"
 
-namespace RubberBand 
+namespace RubberBand
 {
-      
+
 RubberBandStretcher::Impl::ChannelData::ChannelData(size_t windowSize,
                                                     size_t fftSize,
                                                     size_t outbufSize)
@@ -68,7 +68,7 @@ RubberBandStretcher::Impl::ChannelData::construct(const std::set<size_t> &sizes,
     size_t realSize = maxSize / 2 + 1;
 
 //    std::cerr << "ChannelData::construct([" << sizes.size() << "], " << maxSize << ", " << realSize << ", " << outbufSize << ")" << std::endl;
-    
+
     if (outbufSize < maxSize) outbufSize = maxSize;
 
     inbuf = new RingBuffer<float>(maxSize);
@@ -141,7 +141,7 @@ RubberBandStretcher::Impl::ChannelData::setSizes(size_t windowSize,
                 ffts[fftSize]->initFloat();
             }
         }
-        
+
         fft = ffts[fftSize];
 
         v_zero(fltbuf, maxSize);
@@ -189,7 +189,7 @@ RubberBandStretcher::Impl::ChannelData::setSizes(size_t windowSize,
         (windowAccumulator, oldMax, maxSize);
 
     interpolatorScale = 0;
-    
+
     //!!! and resampler?
 
     if (ffts.find(fftSize) == ffts.end()) {
@@ -200,7 +200,7 @@ RubberBandStretcher::Impl::ChannelData::setSizes(size_t windowSize,
             ffts[fftSize]->initFloat();
         }
     }
-    
+
     fft = ffts[fftSize];
 }
 
@@ -274,7 +274,7 @@ RubberBandStretcher::Impl::ChannelData::reset()
 
     // Avoid dividing opening sample (which will be discarded anyway) by zero
     windowAccumulator[0] = 1.f;
-    
+
     accumulatorFill = 0;
     prevIncrement = 0;
     chunkCount = 0;

@@ -26,8 +26,6 @@
 
 #include <sys/types.h>
 
-//#define DEBUG_RINGBUFFER 1
-
 #include "system/sysutils.h"
 #include "system/Allocators.h"
 
@@ -108,7 +106,7 @@ public:
      * types are compatible for arithmetic operations.
      */
     template <typename S>
-    int read(S *const R__ destination, int n);
+    int read(S *const destination, int n);
 
     /**
      * Read n samples from the buffer, adding them to the destination.
@@ -120,7 +118,7 @@ public:
      * types are compatible for arithmetic operations.
      */
     template <typename S>
-    int readAdding(S *const R__ destination, int n);
+    int readAdding(S *const destination, int n);
 
     /**
      * Read one sample from the buffer.  If no sample is available,
@@ -137,7 +135,7 @@ public:
      * the remainder will be zeroed out.  Returns the number of
      * samples actually read.
      */
-    int peek(T *const R__ destination, int n) const;
+    int peek(T *const destination, int n) const;
 
     /**
      * Read one sample from the buffer, if available, without
@@ -164,7 +162,7 @@ public:
      * types are compatible for assignment.
      */
     template <typename S>
-    int write(const S *const R__ source, int n);
+    int write(const S *const source, int n);
 
     /**
      * Write n zero-value samples to the buffer.  If insufficient
@@ -174,7 +172,7 @@ public:
     int zero(int n);
 
 protected:
-    T *const R__ m_buffer;
+    T *const m_buffer;
     int          m_writer;
     int          m_reader;
     const int    m_size;
@@ -206,20 +204,12 @@ RingBuffer<T>::RingBuffer(int n) :
     m_size(n + 1),
     m_mlocked(false)
 {
-#ifdef DEBUG_RINGBUFFER
-    std::cerr << "RingBuffer<T>[" << this << "]::RingBuffer(" << n << ")" << std::endl;
-#endif
-
     m_reader = 0;
 }
 
 template <typename T>
 RingBuffer<T>::~RingBuffer()
 {
-#ifdef DEBUG_RINGBUFFER
-    std::cerr << "RingBuffer<T>[" << this << "]::~RingBuffer" << std::endl;
-#endif
-
     if (m_mlocked) {
 	MUNLOCK((void *)m_buffer, m_size * sizeof(T));
     }
@@ -231,10 +221,6 @@ template <typename T>
 int
 RingBuffer<T>::getSize() const
 {
-#ifdef DEBUG_RINGBUFFER
-    std::cerr << "RingBuffer<T>[" << this << "]::getSize(): " << m_size-1 << std::endl;
-#endif
-
     return m_size - 1;
 }
 
@@ -269,10 +255,6 @@ template <typename T>
 void
 RingBuffer<T>::reset()
 {
-#ifdef DEBUG_RINGBUFFER
-    std::cerr << "RingBuffer<T>[" << this << "]::reset" << std::endl;
-#endif
-
     m_reader = m_writer;
 }
 
@@ -293,7 +275,7 @@ RingBuffer<T>::getWriteSpace() const
 template <typename T>
 template <typename S>
 int
-RingBuffer<T>::read(S *const R__ destination, int n)
+RingBuffer<T>::read(S *const destination, int n)
 {
     int w = m_writer;
     int r = m_reader;
@@ -308,7 +290,7 @@ RingBuffer<T>::read(S *const R__ destination, int n)
     if (n == 0) return n;
 
     int here = m_size - r;
-    T *const R__ bufbase = m_buffer + r;
+    T *const bufbase = m_buffer + r;
 
     if (here >= n) {
         v_convert(destination, bufbase, n);
@@ -329,7 +311,7 @@ RingBuffer<T>::read(S *const R__ destination, int n)
 template <typename T>
 template <typename S>
 int
-RingBuffer<T>::readAdding(S *const R__ destination, int n)
+RingBuffer<T>::readAdding(S *const destination, int n)
 {
     int w = m_writer;
     int r = m_reader;
@@ -343,7 +325,7 @@ RingBuffer<T>::readAdding(S *const R__ destination, int n)
     if (n == 0) return n;
 
     int here = m_size - r;
-    T *const R__ bufbase = m_buffer + r;
+    T *const bufbase = m_buffer + r;
 
     if (here >= n) {
         v_add(destination, bufbase, n);
@@ -385,7 +367,7 @@ RingBuffer<T>::readOne()
 
 template <typename T>
 int
-RingBuffer<T>::peek(T *const R__ destination, int n) const
+RingBuffer<T>::peek(T *const destination, int n) const
 {
     int w = m_writer;
     int r = m_reader;
@@ -400,7 +382,7 @@ RingBuffer<T>::peek(T *const R__ destination, int n) const
     if (n == 0) return n;
 
     int here = m_size - r;
-    const T *const R__ bufbase = m_buffer + r;
+    const T *const bufbase = m_buffer + r;
 
     if (here >= n) {
         v_copy(destination, bufbase, n);
@@ -456,7 +438,7 @@ RingBuffer<T>::skip(int n)
 template <typename T>
 template <typename S>
 int
-RingBuffer<T>::write(const S *const R__ source, int n)
+RingBuffer<T>::write(const S *const source, int n)
 {
     int w = m_writer;
     int r = m_reader;
@@ -470,7 +452,7 @@ RingBuffer<T>::write(const S *const R__ source, int n)
     if (n == 0) return n;
 
     int here = m_size - w;
-    T *const R__ bufbase = m_buffer + w;
+    T *const bufbase = m_buffer + w;
 
     if (here >= n) {
         v_convert<S, T>(bufbase, source, n);
@@ -504,7 +486,7 @@ RingBuffer<T>::zero(int n)
     if (n == 0) return n;
 
     int here = m_size - w;
-    T *const R__ bufbase = m_buffer + w;
+    T *const bufbase = m_buffer + w;
 
     if (here >= n) {
         v_zero(bufbase, n);

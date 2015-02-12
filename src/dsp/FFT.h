@@ -45,7 +45,7 @@ class FFTImpl;
  * The "interleaved" functions use the format sometimes called CCS --
  * size/2+1 real+imaginary pairs.  So, the array elements at indices 1
  * and size+1 will always be zero (since the signal is real).
- * 
+ *
  * All pointer arguments must point to valid data. A NullArgument
  * exception is thrown if any argument is NULL.
  *
@@ -64,25 +64,25 @@ public:
     FFT(int size, int debugLevel = 0); // may throw InvalidSize
     ~FFT();
 
-    void forward(const double *R__ realIn, double *R__ realOut, double *R__ imagOut);
-    void forwardInterleaved(const double *R__ realIn, double *R__ complexOut);
-    void forwardPolar(const double *R__ realIn, double *R__ magOut, double *R__ phaseOut);
-    void forwardMagnitude(const double *R__ realIn, double *R__ magOut);
+    void forward(const double *realIn, double *realOut, double *imagOut);
+    void forwardInterleaved(const double *realIn, double *complexOut);
+    void forwardPolar(const double *realIn, double *magOut, double *phaseOut);
+    void forwardMagnitude(const double *realIn, double *magOut);
 
-    void forward(const float *R__ realIn, float *R__ realOut, float *R__ imagOut);
-    void forwardInterleaved(const float *R__ realIn, float *R__ complexOut);
-    void forwardPolar(const float *R__ realIn, float *R__ magOut, float *R__ phaseOut);
-    void forwardMagnitude(const float *R__ realIn, float *R__ magOut);
+    void forward(const float *realIn, float *realOut, float *imagOut);
+    void forwardInterleaved(const float *realIn, float *complexOut);
+    void forwardPolar(const float *realIn, float *magOut, float *phaseOut);
+    void forwardMagnitude(const float *realIn, float *magOut);
 
-    void inverse(const double *R__ realIn, const double *R__ imagIn, double *R__ realOut);
-    void inverseInterleaved(const double *R__ complexIn, double *R__ realOut);
-    void inversePolar(const double *R__ magIn, const double *R__ phaseIn, double *R__ realOut);
-    void inverseCepstral(const double *R__ magIn, double *R__ cepOut);
+    void inverse(const double *realIn, const double *imagIn, double *realOut);
+    void inverseInterleaved(const double *complexIn, double *realOut);
+    void inversePolar(const double *magIn, const double *phaseIn, double *realOut);
+    void inverseCepstral(const double *magIn, double *cepOut);
 
-    void inverse(const float *R__ realIn, const float *R__ imagIn, float *R__ realOut);
-    void inverseInterleaved(const float *R__ complexIn, float *R__ realOut);
-    void inversePolar(const float *R__ magIn, const float *R__ phaseIn, float *R__ realOut);
-    void inverseCepstral(const float *R__ magIn, float *R__ cepOut);
+    void inverse(const float *realIn, const float *imagIn, float *realOut);
+    void inverseInterleaved(const float *complexIn, float *realOut);
+    void inversePolar(const float *magIn, const float *phaseIn, float *realOut);
+    void inverseCepstral(const float *magIn, float *cepOut);
 
     // Calling one or both of these is optional -- if neither is
     // called, the first call to a forward or inverse method will call
@@ -112,10 +112,6 @@ public:
     static std::set<std::string> getImplementations();
     static std::string getDefaultImplementation();
     static void setDefaultImplementation(std::string);
-
-#ifdef FFT_MEASUREMENT
-    static std::string tune();
-#endif
 
 protected:
     FFTImpl *d;

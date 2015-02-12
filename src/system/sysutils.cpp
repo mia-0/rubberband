@@ -47,15 +47,6 @@
 #include <cstdlib>
 #include <iostream>
 
-#ifdef HAVE_IPP
-#include <ipp.h> // for static init
-#endif
-
-#ifdef HAVE_VDSP
-#include <Accelerate/Accelerate.h>
-#include <fenv.h>
-#endif
-
 #ifdef _WIN32
 #include <fstream>
 #endif
@@ -101,7 +92,7 @@ system_is_multiprocessor()
 
 #else /* !_WIN32 */
 #ifdef __APPLE__
-    
+
     size_t sz = sizeof(count);
     if (sysctlbyname("hw.ncpu", &count, &sz, NULL, 0)) {
         count = 0;
@@ -154,21 +145,21 @@ system_is_multiprocessor()
 
 void gettimeofday(struct timeval *tv, void *tz)
 {
-    union { 
-	long long ns100;  
-	FILETIME ft; 
-    } now; 
-    
-    ::GetSystemTimeAsFileTime(&now.ft); 
-    tv->tv_usec = (long)((now.ns100 / 10LL) % 1000000LL); 
-    tv->tv_sec = (long)((now.ns100 - 116444736000000000LL) / 10000000LL); 
+    union {
+	long long ns100;
+	FILETIME ft;
+    } now;
+
+    ::GetSystemTimeAsFileTime(&now.ft);
+    tv->tv_usec = (long)((now.ns100 / 10LL) % 1000000LL);
+    tv->tv_sec = (long)((now.ns100 - 116444736000000000LL) / 10000000LL);
 }
 
 void clock_gettime(int, struct timespec *ts)
 {
     static LARGE_INTEGER cps;
     static bool haveCps = false;
-    
+
     if (!haveCps) {
         QueryPerformanceFrequency(&cps);
         haveCps = true;
@@ -208,17 +199,6 @@ void clock_gettime(int, struct timespec *ts)
 
 void system_specific_initialise()
 {
-#if defined HAVE_IPP
-#ifndef USE_IPP_DYNAMIC_LIBS
-//    std::cerr << "Calling ippStaticInit" << std::endl;
-    ippStaticInit();
-#endif
-    ippSetDenormAreZeros(1);
-#elif defined HAVE_VDSP
-#if defined __i386__ || defined __x86_64__ 
-    fesetenv(FE_DFL_DISABLE_SSE_DENORMS_ENV);
-#endif
-#endif
 #if defined __ARMEL__
     static const unsigned int x = 0x04086060;
     static const unsigned int y = 0x03000000;
@@ -266,16 +246,12 @@ system_get_process_status(int pid)
 #ifdef _WIN32
 void system_memorybarrier()
 {
-#ifdef __MSVC__
-    MemoryBarrier();
-#else /* (mingw) */
     LONG Barrier = 0;
     __asm__ __volatile__("xchgl %%eax,%0 "
                          : "=r" (Barrier));
-#endif
 }
 #else /* !_WIN32 */
-#if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)
+#if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINO>= 1)
 // Not required
 #else
 #include <pthread.h>

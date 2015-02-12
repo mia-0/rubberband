@@ -46,7 +46,7 @@ public:
      * corresponding sample frame number in the stretched output.
      */
     void setKeyFrameMap(const std::map<size_t, size_t> &mapping);
-    
+
     /**
      * Calculate phase increments for a region of audio, given the
      * overall target stretch ratio, input duration in audio samples,
@@ -74,7 +74,7 @@ public:
     void setUseHardPeaks(bool use) { m_useHardPeaks = use; }
 
     void reset();
-  
+
     void setDebugLevel(int level) { m_debugLevel = level; }
 
     struct Peak {
