@@ -6,4 +6,5 @@ Name: rubberband
 Version: 1.8.1
 Description: library for audio time-stretching and pitch-shifting
 Libs: -L${libdir} -lrubberband
+Libs.private: -lstdc++
 Cflags: -I${includedir}
