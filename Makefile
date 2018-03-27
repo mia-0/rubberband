@@ -72,28 +72,28 @@ dynamic:lib $(DYNAMIC_TARGET)
 
 install-headers:
 	sed "s,%PREFIX%,$(PREFIX),;s,%LIBDIR%,$(INSTALL_LIBDIR),;s,%INCLUDEDIR%,$(INSTALL_INCDIR)," rubberband.pc.in > rubberband.pc
-	install -d $(INSTALL_PKGDIR)
-	install -d $(INSTALL_INCDIR)
-	install -m 644 rubberband.pc $(INSTALL_PKGDIR)/rubberband.pc
-	install -m 644 $(PUBLIC_INCLUDES) $(INSTALL_INCDIR)
+	install -d $(DESTDIR)$(INSTALL_PKGDIR)
+	install -d $(DESTDIR)$(INSTALL_INCDIR)
+	install -m 644 rubberband.pc $(DESTDIR)$(INSTALL_PKGDIR)/rubberband.pc
+	install -m 644 $(PUBLIC_INCLUDES) $(DESTDIR)$(INSTALL_INCDIR)
 
 install-static: static install-headers
-	install -d $(INSTALL_LIBDIR)
-	install -m644 $(STATIC_TARGET) $(INSTALL_LIBDIR)
+	install -d $(DESTDIR)$(INSTALL_LIBDIR)
+	install -m644 $(STATIC_TARGET) $(DESTDIR)$(INSTALL_LIBDIR)
 
 install-dynamic: dynamic install-headers
-	install -d $(INSTALL_LIBDIR)
-	install -m 755 $(DYNAMIC_TARGET) $(INSTALL_LIBDIR)/$(DYNAMIC_FULL_NAME)
-	ln -sf $(DYNAMIC_FULL_NAME) $(INSTALL_LIBDIR)/$(DYNAMIC_NAME).$(DYNAMIC_ABI_VERSION)
-	ln -sf $(DYNAMIC_FULL_NAME) $(INSTALL_LIBDIR)/$(DYNAMIC_NAME)
+	install -d $(DESTDIR)$(INSTALL_LIBDIR)
+	install -m 755 $(DYNAMIC_TARGET) $(DESTDIR)$(INSTALL_LIBDIR)/$(DYNAMIC_FULL_NAME)
+	ln -sf $(DYNAMIC_FULL_NAME) $(DESTDIR)$(INSTALL_LIBDIR)/$(DYNAMIC_NAME).$(DYNAMIC_ABI_VERSION)
+	ln -sf $(DYNAMIC_FULL_NAME) $(DESTDIR)$(INSTALL_LIBDIR)/$(DYNAMIC_NAME)
 
 install: all install-static install-dynamic
 
 uninstall:
-	rm -f -- $(INSTALL_PKGDIR)/rubberband.pc
-	rm -f -- $(INSTALL_LIBDIR)/$(STATIC_NAME)
-	rm -f -- $(INSTALL_LIBDIR)/$(DYNAMIC_FULL_NAME) $(INSTALL_LIBDIR)/$(DYNAMIC_NAME).$(DYNAMIC_ABI_VERSION) $(DYNAMIC_FULL_NAME) $(INSTALL_LIBDIR)/$(DYNAMIC_NAME)
-	rm -rf -- $(INSTALL_INCDIR)
+	rm -f -- $(DESTDIR)$(INSTALL_PKGDIR)/rubberband.pc
+	rm -f -- $(DESTDIR)$(INSTALL_LIBDIR)/$(STATIC_NAME)
+	rm -f -- $(DESTDIR)$(INSTALL_LIBDIR)/$(DYNAMIC_FULL_NAME) $(DESTDIR)$(INSTALL_LIBDIR)/$(DYNAMIC_NAME).$(DYNAMIC_ABI_VERSION) $(DYNAMIC_FULL_NAME) $(DESTDIR)$(INSTALL_LIBDIR)/$(DYNAMIC_NAME)
+	rm -rf -- $(DESTDIR)$(INSTALL_INCDIR)
 
 clean:
 	rm -f -- $(LIBRARY_OBJECTS)
