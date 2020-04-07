@@ -2,7 +2,11 @@ PREFIX			:= /usr/local
 LIBDIR			:= $(PREFIX)/lib
 INCLUDEDIR		:= $(PREFIX)/include
 
+ifeq ($(OS),Windows_NT)
+OPTFLAGS		:= -g -O3 -Wall
+else
 OPTFLAGS		:= -fPIC -g -O3 -Wall
+endif
 override CFLAGS		:= $(OPTFLAGS) $(CFLAGS)
 override CXXFLAGS	:= $(OPTFLAGS) -DUSE_PTHREADS -DNDEBUG -I. -Isrc -Irubberband $(CXXFLAGS)
 override LDFLAGS	:= -pthread $(LDFLAGS)
